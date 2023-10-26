@@ -1,0 +1,40 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.7'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.office'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.apache.poi:poi:5.2.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    testImplementation 'org.projectlombok:lombok:1.18.28'
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+// sockjs
+    implementation 'org.webjars:sockjs-client:1.5.1'
+// stomp
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+// gson
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
