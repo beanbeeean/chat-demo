@@ -33,7 +33,7 @@ public class ChatController {
     // 처리가 완료되면 /sub/chat/room/roomId 로 메시지가 전송된다.
     @MessageMapping("/chat/enterUser")
     public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) {
-
+        System.out.println("엔터유저");
         // 채팅방 유저+1
         repository.plusUserCnt(chat.getRoomId());
 
@@ -52,6 +52,7 @@ public class ChatController {
     // 해당 유저
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDto chat) {
+        System.out.println("아아아앙아아아아아");
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
