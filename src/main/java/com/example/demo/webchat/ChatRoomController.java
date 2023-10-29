@@ -58,10 +58,12 @@ public class ChatRoomController {
     // 채팅방 생성(연결)
     @PostMapping("/chat/createroom")
     @ResponseBody
-    public Map<String,Object> createRoom(@RequestBody Map<String,String> newName, RedirectAttributes rttr) {
-        System.out.println("newName :: "+ newName.get("newName"));
-        ChatRoom room = chatRepository.createChatRoom(newName.get("newName"));
+    public Map<String,Object> createRoom(@RequestBody Map<String,String> roomInfo, RedirectAttributes rttr) {
+        System.out.println("newName :: "+ roomInfo.get("newName"));
+        System.out.println("maxCount :: "+ roomInfo.get("userMaxCount"));
+        ChatRoom room = chatRepository.createChatRoom(roomInfo.get("newName"), roomInfo.get("userMaxCount"));
         log.info("CREATE Chat Room {}", room);
+
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("roomName",room);
 //        rttr.addFlashAttribute("roomName", room);

@@ -34,8 +34,8 @@ public class ChatRepository {
     }
 
     // roomName 로 채팅방 만들기
-    public ChatRoom createChatRoom(String roomName){
-        ChatRoom chatRoom = new ChatRoom().create(roomName); // 채팅룸 이름으로 채팅 룸 생성 후
+    public ChatRoom createChatRoom(String roomName, String userMaxCount){
+        ChatRoom chatRoom = new ChatRoom().create(roomName, Integer.parseInt(userMaxCount)); // 채팅룸 이름으로 채팅 룸 생성 후
 
         // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장
         chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
@@ -61,7 +61,7 @@ public class ChatRepository {
         String userUUID = UUID.randomUUID().toString();
 
         // 아이디 중복 확인 후 userList 에 추가
-        room.getUserlist().put(userUUID, userName);
+        room.getUserList().put(userUUID, userName);
 
         return userUUID;
     }
@@ -73,7 +73,7 @@ public class ChatRepository {
 
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
         // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-        while(room.getUserlist().containsValue(tmp)){
+        while(room.getUserList().containsValue(tmp)){
             int ranNum = (int) (Math.random()*100)+1;
 
             tmp = username+ranNum;
@@ -85,13 +85,13 @@ public class ChatRepository {
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
         ChatRoom room = chatRoomMap.get(roomId);
-        room.getUserlist().remove(userUUID);
+        room.getUserList().remove(userUUID);
     }
 
     // 채팅방 userName 조회
     public String getUserName(String roomId, String userUUID){
         ChatRoom room = chatRoomMap.get(roomId);
-        return room.getUserlist().get(userUUID);
+        return room.getUserList().get(userUUID);
     }
 
     // 채팅방 전체 userlist 조회
@@ -102,7 +102,7 @@ public class ChatRepository {
 
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserlist().forEach((key, value) -> list.add(value));
+        room.getUserList().forEach((key, value) -> list.add(value));
         return list;
     }
 }
