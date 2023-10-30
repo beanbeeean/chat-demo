@@ -27,7 +27,6 @@ public class AwsDynamoDbService {
             // Save Lyric To DynamoDB
             DynamoDBMapper mapper = new DynamoDBMapper(amazonDynamoDBClient);
             mapper.save(lyric);
-
         } catch(Exception e){
             System.out.println("e:: " + e);;
         }

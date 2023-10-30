@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.webchat.IChatMapper">
+
+    <insert id="insertChatRoomForUser" parameterType="String">
+        INSERT INTO tbl_user_chat(u_mail, room_id, uc_reg_date) VALUES(#{param1}, #{param2}, NOW())
+    </insert>
+
+    <select id="getUsersChatRooms" parameterType="String" resultType="String">
+        SELECT room_id FROM tbl_user_chat WHERE u_mail = #{param1}
+    </select>
+
+    <select id="isAlreadyJoined" parameterType="String" resultType="Integer">
+        SELECT COUNT(*) FROM tbl_user_chat WHERE room_id = #{param1} AND u_mail = #{param2}
+    </select>
+
+    <delete id="deleteChatRoomForUser" parameterType="String">
+        DELETE FROM tbl_user_chat WHERE u_mail = #{param1} AND room_id = #{param2}
+    </delete>
+</mapper>

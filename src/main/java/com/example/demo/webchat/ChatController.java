@@ -1,6 +1,7 @@
 package com.example.demo.webchat;
 
 import com.example.demo.dto.ChatDto;
+import com.example.demo.dto.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,36 +30,58 @@ public class ChatController {
     @Autowired
     ChatRepository repository;
 
+    @Autowired
+    ChatService chatService;
+
     // MessageMapping 을 통해 webSocket 로 들어오는 메시지를 발신 처리한다.
     // 이때 클라이언트에서는 /pub/chat/message 로 요청하게 되고 이것을 controller 가 받아서 처리한다.
     // 처리가 완료되면 /sub/chat/room/roomId 로 메시지가 전송된다.
-//    @MessageMapping("/chat/enterUser")
-//    public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) {
-//        System.out.println("엔터유저");
-//        // 채팅방 유저+1
-//        repository.plusUserCnt(chat.getRoomId());
-//
-//        // 채팅방에 유저 추가 및 UserUUID 반환
+    @MessageMapping("/chat/enterUser")
+    public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("엔터유저");
+        // 채팅방 유저+1
+
+        int result = chatService.plusUserCnt(chat.getRoomId(), chat.getSender());
+
+        // 채팅방에 유저 추가 및 UserUUID 반환
 //        String userUUID = repository.addUser(chat.getRoomId(), chat.getSender());
-//
-//        // 반환 결과를 socket session 에 userUUID 로 저장
-//        headerAccessor.getSessionAttributes().put("userUUID", userUUID);
-//        headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
-//
-//        chat.setMessage(chat.getSender() + " 님 입장!!");
-//        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-//
-//    }
+
+        // 반환 결과를 socket session 에 userUUID 로 저장
+
+
+        if(result == 0){
+            headerAccessor.getSessionAttributes().put("userUUID", chat.getSender());
+            headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
+
+            chat.setMessage(chat.getSender() + " 님 입장!!");
+            template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+
+            chatService.saveChatList(chat);
+        } else if (result > 0) {
+            ChatRoom chatRoom = chatService.findRoomByRoomId(chat.getRoomId());
+            headerAccessor.getSessionAttributes().put("userUUID", chat.getSender());
+            headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
+            for (Map<String, String> ct: chatRoom.getChat()) {
+                chat.setMessage(ct.get("msg"));
+                chat.setSender(ct.get("user"));
+                chat.setTime(ct.get("time"));
+                template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+            }
+
+        }
+
+
+    }
 //
 //    // 해당 유저
-//    @MessageMapping("/chat/sendMessage")
-//    public void sendMessage(@Payload ChatDto chat) {
-//        System.out.println("아아아앙아아아아아");
-//        log.info("CHAT {}", chat);
-//        chat.setMessage(chat.getMessage());
-//        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-//
-//    }
+    @MessageMapping("/chat/sendMessage")
+    public void sendMessage(@Payload ChatDto chat) {
+        System.out.println("아아아앙아아아아아");
+        log.info("CHAT {}", chat);
+        chat.setMessage(chat.getMessage());
+        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+        chatService.saveChatList(chat);
+    }
 //
 //    // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
 //    @EventListener

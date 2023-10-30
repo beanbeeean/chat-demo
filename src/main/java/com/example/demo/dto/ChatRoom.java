@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,18 +31,30 @@ public class ChatRoom {
     @DynamoDBAttribute
     private long userCount; // 채팅방 인원수
 
-    @DynamoDBAttribute
-    private ArrayList<Map<String, String>> userList;
+//    @DynamoDBAttribute
+//    private ArrayList<Map<String, String>> userList;
 
     @DynamoDBAttribute
     private int userMaxCount;
 
-    public ChatRoom create(String roomName, int userMaxCount, ArrayList<Map<String, String>> userList){
+    @DynamoDBAttribute
+    private ArrayList<Map<String, String>> chat;
+
+    public ChatRoom create(String roomName, int userMaxCount){
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = UUID.randomUUID().toString();
         chatRoom.roomName = roomName;
+        chatRoom.userCount = 1;
         chatRoom.userMaxCount = userMaxCount;
-        chatRoom.userList = userList;
+
+        ArrayList<Map<String, String>> chat = new ArrayList<>();
+        Map<String,String> map = new HashMap<>();
+        map.put("user", "ADMIN");
+        map.put("msg", "채팅방이 개설되었습니다.");
+        map.put("time", LocalTime.now().toString());
+        chat.add(map);
+        chatRoom.chat = chat;
+//        chatRoom.userList = userList;
 
         return chatRoom;
     }
