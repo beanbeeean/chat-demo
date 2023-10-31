@@ -128,12 +128,11 @@ public class ChatService {
 
 //    채팅방 인원-1 & 나가기 따로 만들기
     public int minusUserCnt(String roomId, String u_mail){
-        int result = 0;
 
         DynamoDBMapper mapper = new DynamoDBMapper(amazonDynamoDBClient);
         ChatRoom chatRoom = mapper.load(ChatRoom.class, roomId);
-        int deleteSQL = iChatMapper.deleteChatRoomForUser(u_mail,roomId);
-        if(deleteSQL > 0){
+        int result = iChatMapper.deleteChatRoomForUser(u_mail,roomId);
+        if(result > 0){
             chatRoom.setUserCount(chatRoom.getUserCount()-1);
             mapper.save(chatRoom);
         }
